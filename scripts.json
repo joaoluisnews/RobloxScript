@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Auto Miner IMI",
+    "description": "Farm automático para Incremental Mining Infinity",
+    "code": "loadstring(game:HttpGet('https://meuscripts.site/auto_miner.lua'))()"
+  },
+  {
+    "title": "Glitch Pet Muscle Legends",
+    "description": "Bug para glitchar pets com base nos rebirths",
+    "code": "-- seu código Rayfield aqui"
+  },
+  {
+    "title": "Rebirth Automático",
+    "description": "Script para auto rebirth com limite",
+    "code": "-- auto rebirth script aqui"
+  }
+]
