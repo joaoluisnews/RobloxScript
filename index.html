@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Roblox Script</title>
+  <title>Roblox Script Hub</title>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
@@ -84,6 +84,7 @@
       box-shadow: 0 4px 14px rgb(14 165 233 / 0.39);
       transition: box-shadow 0.3s ease, background-color 0.3s ease;
       text-shadow: 0 0 4px rgba(255,255,255,0.5);
+      user-select: none;
     }
     .copy-btn:hover {
       box-shadow: 0 6px 24px rgb(14 165 233 / 0.7);
@@ -96,6 +97,7 @@
       font-size: 1.05rem;
       text-shadow: 0 0 3px #38bdf8aa;
       transition: color 0.3s ease;
+      user-select: none;
     }
     a.view-btn:hover {
       color: #7dd3fc;
@@ -129,6 +131,7 @@
       box-shadow: 0 20px 50px rgba(14, 165, 233, 0.8);
       transform: translateY(-30px);
       transition: transform 0.4s ease;
+      position: relative;
     }
     #scriptDetail.show #detailContent {
       transform: translateY(0);
@@ -149,7 +152,6 @@
       color: #7dd3fc;
     }
 
-    /* Aqui está a alteração principal para o código */
     #detailCode {
       font-family: 'Fira Code', monospace, monospace;
       background: #0f172a;
@@ -159,12 +161,25 @@
       font-size: 0.9rem;
       line-height: 1.4;
       box-shadow: inset 0 0 15px #38bdf8aa;
-      white-space: pre;       /* mantém os espaços e quebras de linha */
-      overflow-x: auto;       /* barra de scroll horizontal */
+      white-space: pre;
+      overflow-x: auto;
       max-width: 100%;
       user-select: text;
       margin-top: 1rem;
       margin-bottom: 1.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #38bdf8 #0f172a;
+    }
+    #detailCode::-webkit-scrollbar {
+      height: 10px;
+    }
+    #detailCode::-webkit-scrollbar-track {
+      background: #0f172a;
+      border-radius: 10px;
+    }
+    #detailCode::-webkit-scrollbar-thumb {
+      background: #38bdf8;
+      border-radius: 10px;
     }
 
     #loading svg {
@@ -195,24 +210,13 @@
       border-color: #3b82f6;
     }
 
-    #detailContent::-webkit-scrollbar {
-      width: 12px;
-    }
-    #detailContent::-webkit-scrollbar-track {
-      background: #0f172a;
-      border-radius: 10px;
-    }
-    #detailContent::-webkit-scrollbar-thumb {
-      background: #38bdf8;
-      border-radius: 10px;
-    }
   </style>
 </head>
 <body class="px-8 py-10">
 
   <header class="mb-12 text-center select-none">
-    <h1 class="text-6xl font-extrabold text-sky-400 drop-shadow-lg tracking-wide">best scripts for Roblox</h1>
-    <p class="text-gray-400 mt-3 text-xl">Here you will find the best scripts for Roblox</p>
+    <h1 class="text-6xl font-extrabold text-sky-400 drop-shadow-lg tracking-wide">Best Scripts for Roblox</h1>
+    <p class="text-gray-400 mt-3 text-xl">Aqui você encontra os melhores scripts para Roblox</p>
   </header>
 
   <div class="flex justify-center mb-10">
@@ -298,11 +302,11 @@
       <p id="detailDesc" class="text-gray-400 text-lg mb-8 leading-relaxed"></p>
       <pre
         id="detailCode"
-        class="bg-[#0f172a] text-green-400 p-8 rounded-3xl whitespace-pre font-mono text-sm shadow-inner"
+        class="bg-[#0f172a] text-green-400 p-8 rounded-3xl whitespace-pre overflow-x-auto font-mono text-sm shadow-inner"
       ></pre>
       <button
         id="copyDetailBtn"
-        class="mt-8 bg-sky-600 hover:bg-sky-700 px-10 py-4 rounded-3xl text-white font-extrabold text-lg transition duration-300 shadow-lg"
+        class="mt-8 bg-sky-600 hover:bg-sky-700 px-10 py-4 rounded-3xl text-white font-extrabold text-lg transition duration-300 shadow-lg select-none"
       >
         Copiar Script
       </button>
@@ -324,11 +328,15 @@
     let loadedCount = 0;
     const loadBatch = 10;
 
+    // Carrega dados do arquivo JSON
     fetch('scripts.json')
       .then((res) => res.json())
       .then((data) => {
         allScripts = data;
         loadScripts();
+      })
+      .catch(() => {
+        scriptsContainer.innerHTML = '<p class="text-center text-red-500">Erro ao carregar scripts.</p>';
       });
 
     function loadScripts(filter = '') {
@@ -342,6 +350,7 @@
         card.querySelector('h2').textContent = script.title;
         card.querySelector('p').textContent = script.description;
 
+        // Botão copiar no card
         const btnCopy = card.querySelector('.copy-btn');
         btnCopy.onclick = () => {
           navigator.clipboard.writeText(script.code);
@@ -349,6 +358,7 @@
           setTimeout(() => (btnCopy.textContent = 'Copiar'), 1500);
         };
 
+        // Botão ver detalhes
         const btnView = card.querySelector('.view-btn');
         btnView.addEventListener('click', (e) => {
           e.preventDefault();
