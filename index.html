@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roblox Scripts</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hub de Scripts Roblox</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     body {
       background-color: #0f172a;
@@ -13,43 +13,121 @@
     }
     .card {
       background-color: #1e293b;
-      transition: transform 0.2s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(30, 41, 59, 0.6);
     }
     .card:hover {
-      transform: scale(1.02);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 20px rgba(30, 41, 59, 0.9);
+    }
+    /* Animação fadeIn para modal */
+    .fade-in {
+      animation: fadeIn 0.25s ease forwards;
+    }
+    .fade-out {
+      animation: fadeOut 0.25s ease forwards;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    @keyframes fadeOut {
+      from {opacity: 1; transform: translateY(0);}
+      to {opacity: 0; transform: translateY(20px);}
     }
   </style>
 </head>
-<body class="min-h-screen px-4 pt-6">
-  <header class="mb-6 text-center">
-    <h1 class="text-4xl font-bold text-sky-400">Hub de Scripts Roblox</h1>
-    <p class="text-gray-400">Feito por você. Scripts seguros e organizados.</p>
+<body class="min-h-screen px-6 pt-8">
+
+  <header class="mb-8 text-center">
+    <h1 class="text-5xl font-extrabold text-sky-400 drop-shadow-lg">Hub de Scripts Roblox</h1>
+    <p class="text-gray-400 mt-2 text-lg">Feito por você. Scripts seguros e organizados.</p>
   </header>
 
-  <div class="flex justify-center mb-6">
-    <input type="text" id="search" placeholder="Pesquisar scripts..." class="w-full max-w-xl p-2 rounded bg-gray-700 text-white border border-gray-600">
+  <div class="flex justify-center mb-8">
+    <input
+      type="text"
+      id="search"
+      placeholder="Pesquisar scripts..."
+      class="w-full max-w-3xl p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-500"
+    />
   </div>
 
-  <div id="scriptsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-  <div id="loading" class="text-center text-gray-500 mt-4 hidden">Carregando mais scripts...</div>
+  <div id="scriptsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+  <div id="loading" class="text-center text-gray-400 mt-6 hidden">
+    <svg class="mx-auto animate-spin h-8 w-8 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      ></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v8H4z"
+      ></path>
+    </svg>
+    <p>Carregando mais scripts...</p>
+  </div>
 
   <!-- Template de Card -->
   <template id="scriptCardTemplate">
-    <div class="card rounded-xl p-4 shadow-lg">
-      <h2 class="text-xl font-semibold mb-2 script-title"></h2>
-      <p class="text-sm text-gray-400 script-desc"></p>
-      <a href="#" class="mt-3 inline-block bg-sky-600 hover:bg-sky-700 px-3 py-1 rounded text-white view-btn">Ver Detalhes</a>
+    <div class="card p-6 shadow-lg flex flex-col justify-between h-full">
+      <div>
+        <h2 class="text-2xl font-semibold mb-3 script-title"></h2>
+        <p class="text-gray-400 text-sm script-desc"></p>
+      </div>
+      <div class="mt-6 flex justify-between items-center">
+        <button
+          class="copy-btn bg-sky-600 hover:bg-sky-700 px-4 py-2 rounded-lg text-white font-medium transition duration-300"
+          title="Copiar código"
+        >
+          Copiar
+        </button>
+        <a
+          href="#"
+          class="view-btn text-sky-400 hover:underline font-semibold"
+          title="Ver detalhes"
+        >
+          Detalhes →
+        </a>
+      </div>
     </div>
   </template>
 
   <!-- Página de Detalhe -->
-  <div id="scriptDetail" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 hidden z-50 flex items-center justify-center">
-    <div class="bg-gray-900 p-6 rounded-xl max-w-xl w-full text-left">
-      <button class="mb-4 text-red-400 hover:underline" id="closeDetail">Fechar</button>
-      <h2 id="detailTitle" class="text-2xl font-bold mb-2"></h2>
-      <p id="detailDesc" class="text-gray-400 mb-4"></p>
-      <pre id="detailCode" class="bg-gray-800 p-4 rounded text-green-400 overflow-x-auto text-sm"></pre>
-      <button id="copyDetailBtn" class="mt-3 bg-sky-600 hover:bg-sky-700 px-3 py-1 rounded text-white">Copiar Script</button>
+  <div
+    id="scriptDetail"
+    class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-90 hidden z-50 flex items-center justify-center px-4"
+  >
+    <div
+      id="detailContent"
+      class="bg-gray-900 rounded-2xl p-8 max-w-3xl w-full shadow-2xl max-h-[90vh] overflow-auto relative fade-in"
+    >
+      <button
+        id="closeDetail"
+        class="absolute top-4 right-6 text-red-400 hover:text-red-600 font-bold text-xl"
+        title="Fechar"
+      >
+        ✕
+      </button>
+
+      <h2 id="detailTitle" class="text-3xl font-bold mb-4"></h2>
+      <p id="detailDesc" class="text-gray-400 mb-6 text-lg leading-relaxed"></p>
+      <pre
+        id="detailCode"
+        class="bg-gray-800 p-6 rounded-xl text-green-400 overflow-x-auto whitespace-pre-wrap text-sm font-mono"
+      ></pre>
+      <button
+        id="copyDetailBtn"
+        class="mt-6 bg-sky-600 hover:bg-sky-700 px-6 py-3 rounded-xl text-white font-semibold transition duration-300"
+      >
+        Copiar Script
+      </button>
     </div>
   </div>
 
@@ -58,6 +136,7 @@
     const template = document.getElementById('scriptCardTemplate');
     const loading = document.getElementById('loading');
     const scriptDetail = document.getElementById('scriptDetail');
+    const detailContent = document.getElementById('detailContent');
     const detailTitle = document.getElementById('detailTitle');
     const detailDesc = document.getElementById('detailDesc');
     const detailCode = document.getElementById('detailCode');
@@ -69,39 +148,59 @@
 
     // Carrega dados reais de um arquivo JSON
     fetch('scripts.json')
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         allScripts = data;
         loadScripts();
       });
 
     function loadScripts(filter = '') {
-      const filtered = allScripts.filter(s => s.title.toLowerCase().includes(filter.toLowerCase()));
+      const filtered = allScripts.filter((s) =>
+        s.title.toLowerCase().includes(filter.toLowerCase())
+      );
       const toShow = filtered.slice(loadedCount, loadedCount + loadBatch);
-      toShow.forEach(script => {
+
+      toShow.forEach((script) => {
         const card = template.content.cloneNode(true);
         card.querySelector('.script-title').textContent = script.title;
         card.querySelector('.script-desc').textContent = script.description;
-        card.querySelector('.view-btn').addEventListener('click', (e) => {
+
+        // Botão copiar no card
+        const btnCopy = card.querySelector('.copy-btn');
+        btnCopy.onclick = () => {
+          navigator.clipboard.writeText(script.code);
+          btnCopy.textContent = 'Copiado!';
+          setTimeout(() => (btnCopy.textContent = 'Copiar'), 1500);
+        };
+
+        // Botão ver detalhes
+        const btnView = card.querySelector('.view-btn');
+        btnView.addEventListener('click', (e) => {
           e.preventDefault();
           openScriptDetail(script);
         });
+
         scriptsContainer.appendChild(card);
       });
+
       loadedCount += toShow.length;
     }
 
     function onScroll() {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 100
+      ) {
+        if (!loading.classList.contains('hidden')) return;
         loading.classList.remove('hidden');
         setTimeout(() => {
           loadScripts(document.getElementById('search').value);
           loading.classList.add('hidden');
-        }, 500);
+        }, 800);
       }
     }
 
-    document.getElementById('search').addEventListener('input', e => {
+    document.getElementById('search').addEventListener('input', (e) => {
       loadedCount = 0;
       scriptsContainer.innerHTML = '';
       loadScripts(e.target.value);
@@ -111,12 +210,22 @@
       detailTitle.textContent = script.title;
       detailDesc.textContent = script.description;
       detailCode.textContent = script.code;
-      copyDetailBtn.onclick = () => navigator.clipboard.writeText(script.code);
+      copyDetailBtn.onclick = () => {
+        navigator.clipboard.writeText(script.code);
+        copyDetailBtn.textContent = 'Copiado!';
+        setTimeout(() => (copyDetailBtn.textContent = 'Copiar Script'), 1500);
+      };
       scriptDetail.classList.remove('hidden');
+      detailContent.classList.remove('fade-out');
+      detailContent.classList.add('fade-in');
     }
 
     document.getElementById('closeDetail').addEventListener('click', () => {
-      scriptDetail.classList.add('hidden');
+      detailContent.classList.remove('fade-in');
+      detailContent.classList.add('fade-out');
+      setTimeout(() => {
+        scriptDetail.classList.add('hidden');
+      }, 250);
     });
 
     window.addEventListener('scroll', onScroll);
