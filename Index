@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roblox Scripts</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f1f5f9;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .card {
+      background-color: #1e293b;
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body class="min-h-screen px-4 pt-6">
+  <header class="mb-6 text-center">
+    <h1 class="text-4xl font-bold text-sky-400">Hub de Scripts Roblox</h1>
+    <p class="text-gray-400">Feito por você. Scripts seguros e organizados.</p>
+  </header>
+
+  <div class="flex justify-center mb-6">
+    <input type="text" id="search" placeholder="Pesquisar scripts..." class="w-full max-w-xl p-2 rounded bg-gray-700 text-white border border-gray-600">
+  </div>
+
+  <div id="scriptsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  <div id="loading" class="text-center text-gray-500 mt-4 hidden">Carregando mais scripts...</div>
+
+  <!-- Template de Card -->
+  <template id="scriptCardTemplate">
+    <div class="card rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-2 script-title"></h2>
+      <p class="text-sm text-gray-400 script-desc"></p>
+      <a href="#" class="mt-3 inline-block bg-sky-600 hover:bg-sky-700 px-3 py-1 rounded text-white view-btn">Ver Detalhes</a>
+    </div>
+  </template>
+
+  <!-- Página de Detalhe -->
+  <div id="scriptDetail" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 hidden z-50 flex items-center justify-center">
+    <div class="bg-gray-900 p-6 rounded-xl max-w-xl w-full text-left">
+      <button class="mb-4 text-red-400 hover:underline" id="closeDetail">Fechar</button>
+      <h2 id="detailTitle" class="text-2xl font-bold mb-2"></h2>
+      <p id="detailDesc" class="text-gray-400 mb-4"></p>
+      <pre id="detailCode" class="bg-gray-800 p-4 rounded text-green-400 overflow-x-auto text-sm"></pre>
+      <button id="copyDetailBtn" class="mt-3 bg-sky-600 hover:bg-sky-700 px-3 py-1 rounded text-white">Copiar Script</button>
+    </div>
+  </div>
+
+  <script>
+    const scriptsContainer = document.getElementById('scriptsContainer');
+    const template = document.getElementById('scriptCardTemplate');
+    const loading = document.getElementById('loading');
+    const scriptDetail = document.getElementById('scriptDetail');
+    const detailTitle = document.getElementById('detailTitle');
+    const detailDesc = document.getElementById('detailDesc');
+    const detailCode = document.getElementById('detailCode');
+    const copyDetailBtn = document.getElementById('copyDetailBtn');
+
+    let allScripts = [];
+    let loadedCount = 0;
+    const loadBatch = 10;
+
+    // Carrega dados reais de um arquivo JSON
+    fetch('scripts.json')
+      .then(res => res.json())
+      .then(data => {
+        allScripts = data;
+        loadScripts();
+      });
+
+    function loadScripts(filter = '') {
+      const filtered = allScripts.filter(s => s.title.toLowerCase().includes(filter.toLowerCase()));
+      const toShow = filtered.slice(loadedCount, loadedCount + loadBatch);
+      toShow.forEach(script => {
+        const card = template.content.cloneNode(true);
+        card.querySelector('.script-title').textContent = script.title;
+        card.querySelector('.script-desc').textContent = script.description;
+        card.querySelector('.view-btn').addEventListener('click', (e) => {
+          e.preventDefault();
+          openScriptDetail(script);
+        });
+        scriptsContainer.appendChild(card);
+      });
+      loadedCount += toShow.length;
+    }
+
+    function onScroll() {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+        loading.classList.remove('hidden');
+        setTimeout(() => {
+          loadScripts(document.getElementById('search').value);
+          loading.classList.add('hidden');
+        }, 500);
+      }
+    }
+
+    document.getElementById('search').addEventListener('input', e => {
+      loadedCount = 0;
+      scriptsContainer.innerHTML = '';
+      loadScripts(e.target.value);
+    });
+
+    function openScriptDetail(script) {
+      detailTitle.textContent = script.title;
+      detailDesc.textContent = script.description;
+      detailCode.textContent = script.code;
+      copyDetailBtn.onclick = () => navigator.clipboard.writeText(script.code);
+      scriptDetail.classList.remove('hidden');
+    }
+
+    document.getElementById('closeDetail').addEventListener('click', () => {
+      scriptDetail.classList.add('hidden');
+    });
+
+    window.addEventListener('scroll', onScroll);
+  </script>
+</body>
+</html>
