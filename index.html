@@ -1,62 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hub de Scripts Roblox</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
+    /* Fundo com gradiente animado */
     body {
-      background-color: #0f172a;
-      color: #f1f5f9;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(270deg, #0f172a, #1e293b, #0f172a, #1e293b);
+      background-size: 800% 800%;
+      animation: gradientBG 15s ease infinite;
+      color: #e0e7ff;
     }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Cards 3D */
     .card {
-      background-color: #1e293b;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(30, 41, 59, 0.6);
+      background: #1e293bcc;
+      border-radius: 1rem;
+      box-shadow:
+        0 10px 20px rgba(0,0,0,0.5),
+        inset 0 -5px 10px rgba(255, 255, 255, 0.05);
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.5rem;
     }
     .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 20px rgba(30, 41, 59, 0.9);
+      transform: translateY(-15px) scale(1.05);
+      box-shadow:
+        0 20px 30px rgba(0, 112, 244, 0.7),
+        inset 0 -5px 20px rgba(255, 255, 255, 0.1);
     }
-    /* Animação fadeIn para modal */
-    .fade-in {
-      animation: fadeIn 0.25s ease forwards;
+
+    /* Botões com efeito brilho e ripple */
+    button, a.view-btn {
+      position: relative;
+      overflow: hidden;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
     }
-    .fade-out {
-      animation: fadeOut 0.25s ease forwards;
+    button::after, a.view-btn::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      opacity: 0.75;
+      pointer-events: none;
+      animation: ripple 0.6s linear;
+      background-color: rgba(14, 165, 233, 0.6);
     }
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(20px);}
-      to {opacity: 1; transform: translateY(0);}
+    button:active::after, a.view-btn:active::after {
+      transform: scale(4);
+      opacity: 0;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      animation: none;
     }
-    @keyframes fadeOut {
-      from {opacity: 1; transform: translateY(0);}
-      to {opacity: 0; transform: translateY(20px);}
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Botão copiar */
+    .copy-btn {
+      background: #0ea5e9;
+      color: white;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      padding: 0.6rem 1.2rem;
+      box-shadow: 0 4px 14px rgb(14 165 233 / 0.39);
+      transition: box-shadow 0.3s ease, background-color 0.3s ease;
+      text-shadow: 0 0 4px rgba(255,255,255,0.5);
+    }
+    .copy-btn:hover {
+      box-shadow: 0 6px 24px rgb(14 165 233 / 0.7);
+      background-color: #0284c7;
+    }
+
+    /* Botão detalhes */
+    a.view-btn {
+      color: #38bdf8;
+      font-weight: 700;
+      font-size: 1.05rem;
+      text-shadow: 0 0 3px #38bdf8aa;
+      transition: color 0.3s ease;
+    }
+    a.view-btn:hover {
+      color: #7dd3fc;
+      text-shadow: 0 0 12px #7dd3fccc;
+    }
+
+    /* Modal */
+    #scriptDetail {
+      background: rgba(0,0,0,0.9);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #scriptDetail.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #detailContent {
+      background: #1e293b;
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      max-width: 40rem;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(14, 165, 233, 0.8);
+      transform: translateY(-30px);
+      transition: transform 0.4s ease;
+    }
+    #scriptDetail.show #detailContent {
+      transform: translateY(0);
+    }
+
+    /* Botão fechar modal */
+    #closeDetail {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      font-size: 2rem;
+      color: #38bdf8;
+      cursor: pointer;
+      font-weight: 700;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+    #closeDetail:hover {
+      color: #7dd3fc;
+    }
+
+    /* Código com destaque e sombra */
+    #detailCode {
+      font-family: 'Fira Code', monospace, monospace;
+      background: #0f172a;
+      color: #7dd3fc;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      box-shadow: inset 0 0 15px #38bdf8aa;
+      white-space: pre-wrap;
+      user-select: text;
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Loader animado com gradiente */
+    #loading svg {
+      filter: drop-shadow(0 0 3px #38bdf8);
+    }
+    #loading p {
+      margin-top: 0.5rem;
+      font-weight: 600;
+      text-shadow: 0 0 8px #38bdf8cc;
+    }
+
+    /* Barra de pesquisa */
+    #search {
+      max-width: 640px;
+      padding-left: 3rem;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%2378BDF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>');
+      background-repeat: no-repeat;
+      background-position: 1rem center;
+      background-size: 1.25rem 1.25rem;
+      border-radius: 1rem;
+      transition: box-shadow 0.3s ease;
+      color: #e0e7ff;
+      border: 1px solid #2563eb;
+    }
+    #search:focus {
+      outline: none;
+      box-shadow: 0 0 12px #38bdf8aa;
+      background-color: #1e293b;
+      border-color: #3b82f6;
+    }
+
+    /* Scrollbar customizada para modal */
+    #detailContent::-webkit-scrollbar {
+      width: 12px;
+    }
+    #detailContent::-webkit-scrollbar-track {
+      background: #0f172a;
+      border-radius: 10px;
+    }
+    #detailContent::-webkit-scrollbar-thumb {
+      background: #38bdf8;
+      border-radius: 10px;
     }
   </style>
 </head>
-<body class="min-h-screen px-6 pt-8">
+<body class="px-8 py-10">
 
-  <header class="mb-8 text-center">
-    <h1 class="text-5xl font-extrabold text-sky-400 drop-shadow-lg">Hub de Scripts Roblox</h1>
-    <p class="text-gray-400 mt-2 text-lg">Feito por você. Scripts seguros e organizados.</p>
+  <header class="mb-12 text-center select-none">
+    <h1 class="text-6xl font-extrabold text-sky-400 drop-shadow-lg tracking-wide">Hub de Scripts Roblox</h1>
+    <p class="text-gray-400 mt-3 text-xl">Feito por você. Scripts seguros e organizados.</p>
   </header>
 
-  <div class="flex justify-center mb-8">
+  <div class="flex justify-center mb-10">
     <input
       type="text"
       id="search"
       placeholder="Pesquisar scripts..."
-      class="w-full max-w-3xl p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-500"
+      autocomplete="off"
+      spellcheck="false"
+      class="text-xl w-full max-w-xl py-4 pl-12 pr-6 bg-transparent border-2 border-sky-700 focus:border-sky-400 rounded-xl placeholder-sky-400 transition duration-300"
     />
   </div>
 
-  <div id="scriptsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-  <div id="loading" class="text-center text-gray-400 mt-6 hidden">
-    <svg class="mx-auto animate-spin h-8 w-8 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+  <main id="scriptsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12"></main>
+
+  <div id="loading" class="text-center text-sky-400 mt-8 hidden select-none">
+    <svg class="mx-auto animate-spin h-10 w-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <circle
         class="opacity-25"
         cx="12"
@@ -74,61 +255,66 @@
     <p>Carregando mais scripts...</p>
   </div>
 
-  <!-- Template de Card -->
   <template id="scriptCardTemplate">
-    <div class="card p-6 shadow-lg flex flex-col justify-between h-full">
-      <div>
-        <h2 class="text-2xl font-semibold mb-3 script-title"></h2>
-        <p class="text-gray-400 text-sm script-desc"></p>
-      </div>
-      <div class="mt-6 flex justify-between items-center">
+    <article class="card group shadow-lg p-6 h-full">
+      <h2
+        class="text-3xl font-semibold mb-4 group-hover:text-sky-400 transition duration-300"
+      ></h2>
+      <p class="text-gray-400 leading-relaxed mb-8 line-clamp-3"></p>
+      <div class="flex justify-between items-center">
         <button
-          class="copy-btn bg-sky-600 hover:bg-sky-700 px-4 py-2 rounded-lg text-white font-medium transition duration-300"
+          class="copy-btn relative overflow-hidden font-semibold shadow-md select-none"
           title="Copiar código"
         >
           Copiar
+          <span
+            class="absolute inset-0 bg-sky-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"
+            style="z-index:-1"
+          ></span>
         </button>
         <a
           href="#"
-          class="view-btn text-sky-400 hover:underline font-semibold"
+          class="view-btn text-sky-400 font-bold hover:underline"
           title="Ver detalhes"
         >
           Detalhes →
         </a>
       </div>
-    </div>
+    </article>
   </template>
 
-  <!-- Página de Detalhe -->
   <div
     id="scriptDetail"
-    class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-90 hidden z-50 flex items-center justify-center px-4"
+    class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-90 backdrop-blur-sm hidden z-50 items-center justify-center px-6"
   >
-    <div
+    <section
       id="detailContent"
-      class="bg-gray-900 rounded-2xl p-8 max-w-3xl w-full shadow-2xl max-h-[90vh] overflow-auto relative fade-in"
+      class="bg-[#1e293b] rounded-3xl p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl"
     >
       <button
         id="closeDetail"
-        class="absolute top-4 right-6 text-red-400 hover:text-red-600 font-bold text-xl"
-        title="Fechar"
+        aria-label="Fechar"
+        class="absolute top-6 right-8 text-4xl text-sky-400 hover:text-sky-600 font-extrabold select-none transition-colors duration-300"
       >
-        ✕
+        &times;
       </button>
 
-      <h2 id="detailTitle" class="text-3xl font-bold mb-4"></h2>
-      <p id="detailDesc" class="text-gray-400 mb-6 text-lg leading-relaxed"></p>
+      <h2
+        id="detailTitle"
+        class="text-4xl font-extrabold mb-6 leading-tight tracking-wide"
+      ></h2>
+      <p id="detailDesc" class="text-gray-400 text-lg mb-8 leading-relaxed"></p>
       <pre
         id="detailCode"
-        class="bg-gray-800 p-6 rounded-xl text-green-400 overflow-x-auto whitespace-pre-wrap text-sm font-mono"
+        class="bg-[#0f172a] text-green-400 p-8 rounded-3xl whitespace-pre-wrap font-mono text-sm shadow-inner"
       ></pre>
       <button
         id="copyDetailBtn"
-        class="mt-6 bg-sky-600 hover:bg-sky-700 px-6 py-3 rounded-xl text-white font-semibold transition duration-300"
+        class="mt-8 bg-sky-600 hover:bg-sky-700 px-10 py-4 rounded-3xl text-white font-extrabold text-lg transition duration-300 shadow-lg"
       >
         Copiar Script
       </button>
-    </div>
+    </section>
   </div>
 
   <script>
@@ -162,8 +348,8 @@
 
       toShow.forEach((script) => {
         const card = template.content.cloneNode(true);
-        card.querySelector('.script-title').textContent = script.title;
-        card.querySelector('.script-desc').textContent = script.description;
+        card.querySelector('h2').textContent = script.title;
+        card.querySelector('p').textContent = script.description;
 
         // Botão copiar no card
         const btnCopy = card.querySelector('.copy-btn');
@@ -189,14 +375,14 @@
     function onScroll() {
       if (
         window.innerHeight + window.scrollY >=
-        document.body.offsetHeight - 100
+        document.body.offsetHeight - 150
       ) {
         if (!loading.classList.contains('hidden')) return;
         loading.classList.remove('hidden');
         setTimeout(() => {
           loadScripts(document.getElementById('search').value);
           loading.classList.add('hidden');
-        }, 800);
+        }, 700);
       }
     }
 
@@ -215,17 +401,11 @@
         copyDetailBtn.textContent = 'Copiado!';
         setTimeout(() => (copyDetailBtn.textContent = 'Copiar Script'), 1500);
       };
-      scriptDetail.classList.remove('hidden');
-      detailContent.classList.remove('fade-out');
-      detailContent.classList.add('fade-in');
+      scriptDetail.classList.add('show');
     }
 
     document.getElementById('closeDetail').addEventListener('click', () => {
-      detailContent.classList.remove('fade-in');
-      detailContent.classList.add('fade-out');
-      setTimeout(() => {
-        scriptDetail.classList.add('hidden');
-      }, 250);
+      scriptDetail.classList.remove('show');
     });
 
     window.addEventListener('scroll', onScroll);
