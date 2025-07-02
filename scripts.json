@@ -1,7 +1,17 @@
 [
   {
-    "title": "clica aqui",
-    "description": "swld gay",
-    "code": "😈"
+    "title": "Auto Clicker",
+    "description": "Clica automaticamente no jogo.",
+    "code": "while true do\n  game:GetService('VirtualUser'):ClickButton1(Vector2.new())\n  wait(0.1)\nend"
+  },
+  {
+    "title": "Speed Hack",
+    "description": "Aumenta a velocidade do personagem.",
+    "code": "local plr = game.Players.LocalPlayer\nplr.Character.Humanoid.WalkSpeed = 100"
+  },
+  {
+    "title": "Infinite Jump",
+    "description": "Permite pular infinitamente.",
+    "code": "game:GetService('UserInputService').JumpRequest:Connect(function()\n  game.Players.LocalPlayer.Character.Humanoid:ChangeState('Jumping')\nend)"
   }
 ]
